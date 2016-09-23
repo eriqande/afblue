@@ -1,0 +1,11 @@
+         OffspringID             FatherID             MotherID  ClusterIndex
+             KSHb001                   *1                   #1             1
+             KSHb003                   *2                   #2             2
+             KSHb004                   *3                   #3             3
+             KSHb006                   *4                   #2             2
+             KSHb007                   *5                   #4             4
+             KSHb009                   *3                   #3             3
+             KSHb010                   *6                   #5             2
+             KSHb011                   *4                   #2             2
+             KSHb012                   *6                   #5             2
+             KSHb013                   *2                   #5             2

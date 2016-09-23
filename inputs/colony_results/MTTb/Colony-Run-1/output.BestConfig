@@ -1,0 +1,12 @@
+         OffspringID             FatherID             MotherID  ClusterIndex
+             MTTb001                   *1                   #1             1
+             MTTb002                   *2                   #2             2
+             MTTb003                   *2                   #2             2
+             MTTb004                   *3                   #3             3
+             MTTb005                   *4                   #4             4
+             MTTb006                   *5                   #5             3
+             MTTb007                   *2                   #2             2
+             MTTb008                   *5                   #3             3
+             MTTb009                   *2                   #2             2
+             MTTb010                   *4                   #4             4
+             MTTb011                   *3                   #3             3

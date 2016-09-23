@@ -1,0 +1,5 @@
+         OffspringID             FatherID             MotherID  ClusterIndex
+             KTDb001                   *1                   #1             1
+             KTDb002                   *2                   #2             2
+             KTDb003                   *3                   #3             3
+             KTDb004                   *4                   #4             4

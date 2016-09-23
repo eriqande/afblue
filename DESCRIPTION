@@ -1,0 +1,20 @@
+Package: afblue
+Type: Package
+Title: Best Linear Unbiased Erediction of Allele Frequencies Given Pairwise
+    Kinship
+Version: 0.1.0
+Author: Eric C. Anderson
+Maintainer: Who to complain to <yourfault@somewhere.net>
+Description: Best linear unbiased prediction of allele frequencies given
+    pairwise kinship.This is just an accessible R implementation of the method in
+    McPeek, Wu, and Ober (2004) Best linear unbiased allele-frequency estimation in
+    complex pedigrees. Biometrics 60:359-367.
+Imports:
+    dplyr,
+    kinship2,
+    magrittr,
+    stringr,
+    tidyr
+License: What license is it under?
+LazyData: TRUE
+RoxygenNote: 5.0.1

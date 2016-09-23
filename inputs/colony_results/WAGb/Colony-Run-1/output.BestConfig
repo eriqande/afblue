@@ -1,0 +1,9 @@
+         OffspringID             FatherID             MotherID  ClusterIndex
+             WAGb001                   *1                   #1             1
+             WAGb002                   *2                   #2             1
+             WAGb003                   *2                   #3             1
+             WAGb004                   *1                   #3             1
+             WAGb005                   *1                   #1             1
+             WAGb006                   *3                   #4             2
+             WAGb007                   *4                   #1             1
+             WAGb008                   *5                   #2             1

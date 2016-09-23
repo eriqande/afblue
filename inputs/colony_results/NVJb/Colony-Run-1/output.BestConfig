@@ -1,0 +1,14 @@
+         OffspringID             FatherID             MotherID  ClusterIndex
+             NVJb001                   *1                   #1             1
+             NVJb002                   *2                   #2             2
+             NVJb003                   *3                   #2             2
+             NVJb004                   *4                   #3             3
+             NVJb005                   *2                   #4             2
+             NVJb006                   *3                   #2             2
+             NVJb007                   *4                   #3             3
+             NVJb008                   *3                   #2             2
+             NVJb009                   *5                   #3             3
+             NVJb010                   *3                   #4             2
+             NVJb011                   *4                   #5             3
+             NVJb012                   *6                   #6             4
+             NVJb013                   *7                   #7             5

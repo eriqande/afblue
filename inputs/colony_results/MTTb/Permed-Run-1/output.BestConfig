@@ -1,0 +1,12 @@
+         OffspringID             FatherID             MotherID  ClusterIndex
+              Perm_0                   *1                   #1             1
+              Perm_1                   *2                   #2             2
+              Perm_2                   *3                   #3             3
+              Perm_3                   *4                   #4             4
+              Perm_4                   *2                   #2             2
+              Perm_5                   *5                   #5             5
+              Perm_6                   *6                   #6             6
+              Perm_7                   *7                   #7             7
+              Perm_8                   *8                   #8             8
+              Perm_9                   *9                   #9             9
+             Perm_10                  *10                  #10            10

@@ -1,0 +1,8 @@
+         OffspringID             FatherID             MotherID  ClusterIndex
+             LAGa001                   *1                   #1             1
+             LAGa002                   *2                   #2             2
+             LAGa003                   *3                   #3             3
+             LAGa004                   *4                   #4             4
+             LAGa005                   *5                   #5             5
+             LAGa006                   *6                   #6             6
+             LAGa007                   *7                   #7             7

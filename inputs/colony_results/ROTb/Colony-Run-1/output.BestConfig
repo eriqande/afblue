@@ -1,0 +1,10 @@
+         OffspringID             FatherID             MotherID  ClusterIndex
+             ROTb001                   *1                   #1             1
+             ROTb002                   *1                   #2             1
+             ROTb003                   *2                   #3             2
+             ROTb004                   *3                   #4             3
+             ROTb005                   *4                   #5             4
+             ROTb006                   *1                   #2             1
+             ROTb007                   *3                   #4             3
+             ROTb008                   *3                   #4             3
+             ROTb009                   *5                   #6             5
