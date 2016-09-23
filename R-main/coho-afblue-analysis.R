@@ -62,6 +62,7 @@ full_blue_results <- inner_join(eff_sizes, eff_sizes_unrel)
 
 
 #### Now let us make some plots ####
+dir.create("outputs")
 # first if colony pedigrees are true, compare actual effective sample size of the methods
 eff_n_true <- ggplot(full_blue_results, aes(x = EffNumKidsNaive, y = EffNumKidsBlue)) +
   geom_point(colour = "blue") +
@@ -105,5 +106,5 @@ eff_n_pred_blue_perm <- ggplot(full_blue_results, aes(x = `perm-unrel-EffNumKids
 
 second <- grid.arrange(eff_n_true_perm, eff_n_pred_naive_perm, eff_n_pred_blue_perm)
 
-ggsave(second, filename = "outputs/unrelateds-with-spuriously-inferred-pedigrees.pdf")
+ggsave(second, filename = "outputs/unrelateds-with-spuriously-inferred-pedigrees.pdf", width = 11, height = 17)
 
