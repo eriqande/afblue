@@ -2,7 +2,7 @@
 % Please edit documentation in R/weights_from_matrix_L.R
 \name{weights_from_matrix_L}
 \alias{weights_from_matrix_L}
-\title{Given a matrix L, determine the weights to be given to each individual's genotype}
+\title{Given a matrix L, determine the (unnnormalized) weights to be given to each individual's genotype}
 \usage{
 weights_from_matrix_L(Lmat)
 }
@@ -11,7 +11,7 @@ weights_from_matrix_L(Lmat)
 have row and column names and be invertible}
 }
 \description{
-Given a matrix L, determine the weights to be given to each individual's genotype
+Given a matrix L, determine the (unnnormalized) weights to be given to each individual's genotype
 }
 \examples{
 example(matrix_L_from_pedigree)

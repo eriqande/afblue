@@ -13,7 +13,8 @@ source("R-supp/ccc-sonc-functions.R")
 # sample, and use that to compute an effective sample size.
 
 
-
+# set seed for reproducibility
+set.seed(5)
 
 #### DO some stuff to assess the BLUE ####
 # compute effective sample sizes for Colony-Run-1
@@ -63,6 +64,9 @@ full_blue_results <- inner_join(eff_sizes, eff_sizes_unrel)
 
 #### Now let us make some plots ####
 dir.create("outputs")
+
+# write out the data frame
+write_csv(full_blue_results, path = "outputs/full_blue_results.csv")
 # first if colony pedigrees are true, compare actual effective sample size of the methods
 eff_n_true <- ggplot(full_blue_results, aes(x = EffNumKidsNaive, y = EffNumKidsBlue)) +
   geom_point(colour = "blue") +
