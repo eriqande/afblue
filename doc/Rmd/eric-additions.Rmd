@@ -1,0 +1,84 @@
+---
+title: "Untitled"
+author: "Eric C. Anderson"
+date: "October 3, 2016"
+output:
+  pdf_document: default
+  html_document: default
+  word_document: default
+bibliography: ericadd.bib
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Mathematical analysis of allele frequency estimation under sibling elimination
+
+The maximimum likelihood estimate and the method of moments estimate of the frequency $p$ of an allele $A$ from a sample of
+$S$ independent and randomly sampled diploids are both found as
+$$
+\hat{p} = \frac{1}{S}\sum_{i=1}^S X_i
+$$
+where $X_i\in\{0,\frac{1}{2},1\}$ is a random variable that records the number of copies of the $A$ allele carried by the $i$-th 
+member of the sample, divided by 2.  The sibling-eliminated version of the allele frequency estimator can be written as
+$$
+\tilde{p}^e = \frac{1}{\sum_j z_j}\sum_{i=1}^S z_i X_i
+$$
+where each $z_i$ is either a 1 or 0, indicating that individual $i$ has either been included in
+or eliminated from, respectively, the sample. Note that if every $z_i = 1$ then this estimator clearly reduces to the 
+simple estimator, $\hat{p}$.  An obvious generalization of such an estimator would be
+$$
+\tilde{p} = \frac{1}{\sum_j w_j}\sum_{i=1}^S w_i X_i = \sum_{i=1}^S a_i X_i
+$$
+in which the weights $\mathbf{w} = (w_1,\ldots, w_S)$ are non-negative numbers not constrained to be
+only 0 or 1. We can refer to the weights, $w_i$, by the values $a_i = w_i(\sum_j w_j)^{-1}$ which
+have been normalized so that they sum to unity. 
+
+It is straightforward to show that any choice of $\mathbf{w}$ (so long as at least one element is nonzero) 
+yields an unbiased estimate of $p$; however different choices of $\mathbf{w}$ will produce estimators with
+different variances. The variance of $\tilde{p}$ can be found with the standard formula for the variance of a sum:
+$$
+\mathrm{Var}(\tilde{p}) =
+\sum_i a_i^2\mathrm{Var}(X_i) + \sum_i \sum_{j<i} 2a_ia_j\mathrm{Cov}(X_i,X_j),
+$$
+which can be more compactly expressed in matrix notation as
+$$
+\mathrm{Var}(\tilde{p}) = \mathbf{a}^\top\mathbf{M}\mathbf{a}
+$$
+where $\mathbf{a}$ is a column vector of the normalized weights and $\mathbf{M}$ is the variance-covariance
+matrix of the $X_i$'s.
+From this it is clear that the variance of $\tilde{p}$ depends on the normalized weights (the $a_i$'s), the
+individual variances of each $X_i$ and also on all the pairwise covariances of the $X_i$'s.
+The variances and covariances are, in turn, determined by the true allele frequency and 
+the inbreeding coefficients of 
+each individual and by their pairwise coefficients of kinship. In fact, the covariance matrix 
+is
+$$
+\mathbf{M} = \frac{1}{2}p(1-p)\mathbf{K}
+$$
+where $\mathbf{K}$ is the matrix whose off-diagonal elements are twice the pairwise coefficients of 
+kinship between the members of the sample, and whose diagonal elements in each row, $i$, are equal to 
+$1+f_i$ where $f_i$ is the inbreeding coefficient of individual $i$.
+
+McPeek et al. [-@sara2004best]
+exploited these relationships to derive a Best Linear Unbiased Estimator (BLUE) for allele frequencies
+when the sample consists of individuals of known relationship.  They define $\tilde{p}$ as above and
+use the weights known from the theory of best unbiased linear estimation to minimize the 
+variance of $\tilde{p}$, namely:
+$$
+\mathbf{w} = \mathbf{1}^\top\mathbf{K}^{-1}
+$$
+In other words, the optimal (unnormalized) weights are the sums of the columns of the inverse of the matrix  $\mathbf{K}$.
+The matrix  $\mathbf{K}$ does not depend on the 
+allele frequency itself and it can be easily found by recursive calculation on any pedigree that connects
+the members of the sample [@Thompson2000], and so can be computed in the case of known (or suspected) siblings
+in a sample.  The estimator in general can be expressed in matrix notation as
+$$
+\tilde{p}^\mathrm{blue} = (\mathbf{1}^\top\mathbf{K}^{-1}\mathbf{1})^{-1} \mathbf{1}^\top\mathbf{K}^{-1} \mathbf{X}
+$$
+where $\mathbf{X}$ is the column vector $(X_1, \ldots, X_S)$.  The variance of the BLUE estimator can be derived
+as well:
+$$
+\mathrm{Var}(\tilde{p}^\mathrm{blue}) = \frac{1}{2}p(1-p) (\mathbf{1}^\top\mathbf{K}^{-1}\mathbf{1})^{-1}.
+$$
