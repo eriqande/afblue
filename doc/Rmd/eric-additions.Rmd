@@ -15,7 +15,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Mathematical analysis of allele frequency estimation under sibling elimination
 
-The maximimum likelihood estimate and the method of moments estimate of the frequency $p$ of an allele $A$ from a sample of
+The maximum likelihood estimate and the method of moments estimate of the frequency $p$ of an allele $A$ from a sample of
 $S$ independent and randomly sampled diploids are both found as
 $$
 \hat{p} = \frac{1}{S}\sum_{i=1}^S X_i
@@ -26,7 +26,7 @@ $$
 \tilde{p}^e = \frac{1}{\sum_j z_j}\sum_{i=1}^S z_i X_i
 $$
 where each $z_i$ is either a 1 or 0, indicating that individual $i$ has either been included in
-or eliminated from, respectively, the sample. Note that if every $z_i = 1$ then this estimator clearly reduces to the 
+or eliminated from the sample, respectively. Note that if every $z_i = 1$ then this estimator clearly reduces to the 
 simple estimator, $\hat{p}$.  An obvious generalization of such an estimator would be
 $$
 \tilde{p} = \frac{1}{\sum_j w_j}\sum_{i=1}^S w_i X_i = \sum_{i=1}^S a_i X_i
@@ -59,7 +59,7 @@ $$
 $$
 where $\mathbf{K}$ is the matrix whose off-diagonal elements are twice the pairwise coefficients of 
 kinship between the members of the sample, and whose diagonal elements in each row, $i$, are equal to 
-$1+f_i$ where $f_i$ is the inbreeding coefficient of individual $i$.
+$1+f_i$ where $f_i$ is the inbreeding coefficient of individual $i$ (CITATION).
 
 McPeek et al. [-@sara2004best]
 exploited these relationships to derive a Best Linear Unbiased Estimator (BLUE) for allele frequencies
@@ -82,3 +82,37 @@ as well:
 $$
 \mathrm{Var}(\tilde{p}^\mathrm{blue}) = \frac{1}{2}p(1-p) (\mathbf{1}^\top\mathbf{K}^{-1}\mathbf{1})^{-1}.
 $$
+If all the members of the sample were independent, the variance of $\hat{p}$ would be $\frac{1}{2}p(1-p)S^{-1}$ from which it follows
+that the effective size (i.e., the size of an independent sample that would provide the same variance) of the BLUE estimator
+is $\mathbf{1}^\top\mathbf{K}^{-1}\mathbf{1}$.
+
+Since the weights in $\tilde{p}^\mathrm{blue}$ are chosen to minimize the variance, it should be clear to the reader
+that the variance of $\tilde{p}^\mathrm{blue}$ will always be smaller than variance of $\tilde{p}^e$---the estimate
+obtained by any sibling elimination scheme.  Nonetheless, it will be instructive in our analysis to consider 
+the optimal sibling elimination scheme: the set of weights $\mathbf{z} = (z_1,\ldots,z_S)$ that minimizes $\mathrm{Var}(\tilde{p}^e)$.
+Given a sample of individuals with relationship and inbreeding implying a matrix $\mathbf{K}$ we can perform the 
+analysis above for any set of weights.  Hence we can determine the variance and the effective sample size of a sibling-eliminated
+sample.  The variance is
+$$
+\mathrm{Var}(\tilde{p}^e) = \frac{1}{2}p(1-p) \mathbf{a}^\top \mathbf{Ka}
+$$
+from which it follows that the effective size under sibling elimination is 
+$(\mathbf{a}^\top \mathbf{Ka})-1$ where each element of $\mathbf{a}$ is
+$a_i = z_i / \sum_j z_j$.  
+
+Hence, for any $\mathbf{K}$, it is possible to find
+the optimal sibling elimination scheme (if any).
+As far as we can tell, finding the optimal $\mathbf{z}$ is a combinatorial optimization
+problem akin to quadratic programming (CITATION) but with integer constraints.  We are not aware
+of a straightforward approach to this problem, but propose a simple greedy solution to approximate
+the optimal $\mathbf{z}$.  
+
+1. Initialize:  Set $t \leftarrow 0$, set $\mathbf{z}^{(t)} \leftarrow$ a vector of ones, compute $\mathrm{Var}(\tilde{p}^{e(t)})$ using 
+equation XX,     and let $\mathbf{K}^{(t)} \leftarrow \mathbf{K}$.
+1. Set $t \leftarrow t + 1$, set $\mathbf{z}^{(t)} \leftarrow \mathbf{z}^{(t-1)}$ and $\mathbf{K}^{(t)} \leftarrow \mathbf{K}^{(t-1)}$.
+1. Identify individual $i^*$ with the ``most relatedness and inbreeding'' in the sample as the individual  
+whose row in $\mathbf{K}^{(t)}$ has the largest sum.
+1. Modify $\mathbf{z}^{(t)}$ by setting $z_{i^*}^{(t)} \leftarrow 0$.
+1. Using $\mathbf{z}^{(t)}$ and equation XX compute the variance $\mathrm{Var}(\tilde{p}^{e(t)})$.
+1. If $\mathrm{Var}(\tilde{p}^{e(t)}) < \mathrm{Var}(\tilde{p}^{e(t)})$ then remove row and column $i^*$ from $\mathbf{K}^{(t)}$ and go
+back to step 2.  If not, then return $\mathbf{z}^{(t-1)}$
