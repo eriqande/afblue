@@ -3,6 +3,7 @@
 export("%>%")
 export(a_freq_blue)
 export(matrix_L_from_pedigree)
+export(optimal_z)
 export(read_colony_best_config)
 export(slg_pipe2long)
 export(weights_from_matrix_L)
