@@ -62,6 +62,55 @@ names(eff_sizes_unrel)[-1] <- paste("perm-unrel-", names(eff_sizes_unrel)[-1], s
 full_blue_results <- inner_join(eff_sizes, eff_sizes_unrel)
 
 
+
+#### go back over those paths and see if sibling elimination would have been helpful ####
+sibelim_list <- lapply(paths, function(x) {
+
+  bcped <- read_colony_best_config(path = file.path(x, "Colony-Run-1", "output.BestConfig"))
+  samples <- bcped$id[!is.na(bcped$dad)]
+  if(length(samples) > 1) {
+    L <- matrix_L_from_pedigree(bcped, samples)
+    opti <- optimal_z(L)
+  } else {
+    opti <- NULL
+  }
+
+  opti
+})
+
+# and make a nice tidy data frame of all that
+nonnullers <- sibelim_list[!sapply(sibelim_list, is.null)]
+elimtidy <- lapply(nonnullers, function(x) x$variances) %>%
+  dplyr::bind_rows(.id = "Collection")
+
+# now we want to be able to look at the proportional change in SD compared to
+# just naively using everyone
+elim_sum <- elimtidy %>%
+  group_by(Collection) %>%
+  mutate(var_naive = first(var)) %>%
+  filter(var == min(var)) %>%
+  mutate(elim_effsize = 0.5 * 0.5 / (2 * var),
+         naive_effsize =  0.5 * 0.5 / (2 * var_naive))
+
+
+# then we can put that together
+allfornow <- left_join(full_blue_results, elim_sum)
+
+# and how about a plot where we order these by EffNumKidsBluePred and display them as bars.
+tmp <- allfornow %>%
+  select(Collection, RawNumKids, EffNumKidsNaive, EffNumKidsBluePred, elim_effsize) %>%
+  arrange(EffNumKidsBluePred) %>%
+  mutate(collint = as.integer(factor(Collection, levels = unique(tmp$Collection))))
+
+ggplot(tmp, aes(x = collint, y = EffNumKidsNaive)) +
+  geom_line(color = "red") +
+  geom_line(mapping = aes(y = elim_effsize), colour = "violet") +
+  geom_line(mapping = aes(y = EffNumKidsBluePred), colour = "blue") +
+  geom_line(mapping = aes(y = RawNumKids), colour = "black")
+
+
+
+
 #### Now let us make some plots ####
 dir.create("outputs")
 
