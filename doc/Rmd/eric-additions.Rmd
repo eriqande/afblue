@@ -40,7 +40,7 @@ yields an unbiased estimate of $p$; however different choices of $\mathbf{w}$ wi
 different variances. The variance of $\tilde{p}$ can be found with the standard formula for the variance of a sum:
 $$
 \mathrm{Var}(\tilde{p}) =
-\sum_i a_i^2\mathrm{Var}(X_i) + \sum_i \sum_{j<i} 2a_ia_j\mathrm{Cov}(X_i,X_j),
+\sum_{i=1}^S a_i^2\mathrm{Var}(X_i) + \sum_{i=1}^S \sum_{j<i}^{} 2a_ia_j\mathrm{Cov}(X_i,X_j),
 $$
 which can be more compactly expressed in matrix notation as
 $$
