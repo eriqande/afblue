@@ -13,7 +13,7 @@ optimal_z <- function(L) {
   names(z) <- rownames(L)
   K <- L
   a <- z / sum(z)
-  V <- as.numeric(t(a) %*% L %*% a) * const  # we drop the  part, cuz it is constant.
+  V <- as.numeric(t(a) %*% L %*% a) * const
   t <- 0  # start at 1
   history <- list()
 
