@@ -8,6 +8,7 @@ library(afblue)
 library(ggplot2)
 library(grid)
 library(gridExtra)
+library(forcats)
 
 source("R-supp/ccc-sonc-functions.R")
 
@@ -95,18 +96,23 @@ results <- bind_rows(
 
 
 #### TIDY UP THOSE RESULTS INTO A LONG FORMAT ####
+# and recode the estimators so that they follow the order and nomenclature in the paper
+
 tidy_res <- results %>%
   tidyr::gather(data = ., key = "estimator", value = "ESS", -Collection, -run) %>%
-  tidyr::separate(estimator, into = c("estimator", "condition"))
+  tidyr::separate(estimator, into = c("estimator", "condition")) %>%
+  mutate(Estimator = fct_recode(estimator,
+                                 naive = "naiveESS",
+                                 BLUE = "blueESS",
+                                 `optimal-z` = "optizESS",
+                                 `sib-yank-1` = "sibyankESS",
+                                 `sib-yank-2` = "sibyank2ESS"
+  )) %>%
+  mutate(Estimator = fct_relevel(Estimator, c("naive", "BLUE", "optimal-z", "sib-yank-1", "sib-yank-2")))
 
 
-# a quick plot of it all
-ggplot(tidy_res, aes(x = as.numeric(factor(Collection)), y = ESS, colour = estimator)) +
-  geom_line() +
-  facet_grid(run ~ condition)
 
-
-
+#### MAKE THE (a) PART OF THE FIGURE ####
 # so, let's try ordering it by naiveESS in the Colony-Run-1 / iftrue situation and
 # see what that looks like
 for1 <- tidy_res %>%
@@ -117,9 +123,68 @@ naiveESS <- for1 %>%
 for1f <- for1 %>%
   mutate(collint = as.numeric(factor(Collection, levels = naiveESS$Collection)))
 
-ggplot(for1f, aes(x = collint, y = ESS, colour = estimator)) +
+
+essa <- ggplot(for1f, aes(x = collint, y = ESS, colour = Estimator)) +
   geom_line() +
-  ylim(0,40)
+  ylim(0,40) +
+  xlab("Collection, ordered by naive estimator ESS") +
+  ylab("Effective Sample Size")
+
+# save that
+ggsave(essa, filename = "outputs/ess_fig_a.pdf", width = 8, height = 5)
+
+
+
+#### MAKE THE (b) PART OF THE FIGURE ####
+# and then we can make another plot where we imagine that the sample is
+# unrelated (as it is by permuting it) and do our estimator based on the results
+# that Colony gives us.
+for2 <- tidy_res %>%
+  filter(run == "Permed-Run-1", condition == "ifunrel")
+naiveESS <- for2 %>%
+  filter(estimator == "naiveESS") %>%
+  arrange(ESS)
+for2f <- for2 %>%
+  mutate(collint = as.numeric(factor(Collection, levels = naiveESS$Collection)))
+
+essb <- ggplot(for2f, aes(x = collint, y = ESS, colour = Estimator)) +
+  geom_line() +
+  ylim(0,80) +
+  xlab("Collection, ordered by naive estimator ESS") +
+  ylab("Effective Sample Size")
+
+# save that
+ggsave(essb, filename = "outputs/ess_fig_b.pdf", width = 8, height = 5)
+
+
+
+
+
+#### GET SOME NUMBERS FOR THE PAPER ####
+#count up the number of collections
+colls <- for1f %>%
+  group_by(Collection) %>%
+  tally()
+
+# count up the number of locations
+colls %>%
+  mutate(locations = str_sub(Collection, 1, 3)) %>%
+  group_by(locations) %>%
+  tally()
+
+# get the range of sample sizes
+range(results$naiveESS_ifunrel)
+mean(results$naiveESS_ifunrel)
+
+
+#### OTHER EXPLORATORY STUFF ####
+
+# a quick plot of it all
+ggplot(tidy_res, aes(x = as.numeric(factor(Collection)), y = ESS, colour = estimator)) +
+  geom_line() +
+  facet_grid(run ~ condition)
+
+
 
 
 # what if we wanted to look at it in terms of the percent change in the
@@ -137,21 +202,6 @@ for1percf <- for1perc %>%
 
 ggplot(for1percf, aes(x = collint, y = ess_perc_change, colour = estimator)) +
   geom_line()
-
-# and then we can make another plot where we imagine that the sample is
-# unrelated (as it is by permuting it) and do our estimator based on the results
-# that Colony gives us.
-for2 <- tidy_res %>%
-  filter(run == "Permed-Run-1", condition == "ifunrel")
-naiveESS <- for2 %>%
-  filter(estimator == "naiveESS") %>%
-  arrange(ESS)
-for2f <- for2 %>%
-  mutate(collint = as.numeric(factor(Collection, levels = naiveESS$Collection)))
-
-ggplot(for2f, aes(x = collint, y = ESS, colour = estimator)) +
-  geom_line() +
-  ylim(0,80)
 
 
 
