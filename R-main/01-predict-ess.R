@@ -177,6 +177,58 @@ range(results$naiveESS_ifunrel)
 mean(results$naiveESS_ifunrel)
 
 
+
+#### SUMMARISE THE POPULATIONS BY SAMPLE SIZE AND DEGREE OF RELATEDNESS ####
+ped_df <- lapply(paths, function(x) {
+  read_colony_best_config(path = file.path(x, "Colony-Run-1", "output.BestConfig")) %>%
+    filter(!is.na(mom) & !is.na(dad))
+}) %>%
+  bind_rows(.id = "Collection") %>%
+  mutate(mapa = paste(mom, dad, sep = "-"))
+
+#' here is a function that prints out full sibling group sizes compactly
+#' @param x a vector of ma-pa IDs to be tabulated
+#' @param lim if the number of sibgroups of a certain size exceeds lim, then they will be collapsed into a parenthesis
+#' giving the number
+print_sibs <- function(x, lim = 1) {
+  cnts <- table(sort(table(x), decreasing = TRUE))
+  cnts2 <- cnts[order(as.numeric(names(cnts)), decreasing = TRUE)]
+  sapply(names(cnts2), function(i) {
+    n <- cnts[[i]]
+    if(n > lim) {
+      ret <- paste(i, "(", n, ")", sep = "")
+    } else {
+      ret <- paste(rep(i, n), collapse = ", ")
+    }
+    ret
+  }) %>%
+    paste(., collapse = ", ")
+}
+
+sibsizes_df <- ped_df %>%
+  group_by(Collection) %>%
+  summarise(N = n(), num_ma = n_distinct(mom), num_pa = n_distinct(dad), num_par = num_ma + num_pa,
+            full_sibship_sizes = print_sibs(mapa))
+
+# Now I am going to lazily just do that all over for the permed results
+ped_df <- lapply(paths, function(x) {
+  read_colony_best_config(path = file.path(x, "Permed-Run-1", "output.BestConfig")) %>%
+    filter(!is.na(mom) & !is.na(dad))
+}) %>%
+  bind_rows(.id = "Collection") %>%
+  mutate(mapa = paste(mom, dad, sep = "-"))
+
+
+# now, while we are at it, we may as well attach the different ESSs on there
+CR_ess <- tidy_res %>%
+  filter(run == "Colony-Run-1" & condition == "iftrue") %>%
+  select(-run, -condition, -estimator) %>%
+  tidyr::spread(data = ., key = Estimator, value = ESS)
+
+coho_summ_table <- left_join(sibsizes_df, CR_ess)
+
+write_csv(coho_summ_table, path = "outputs/coho_summ_table-related.csv")
+
 #### OTHER EXPLORATORY STUFF ####
 
 # a quick plot of it all
