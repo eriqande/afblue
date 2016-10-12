@@ -210,14 +210,6 @@ sibsizes_df <- ped_df %>%
   summarise(N = n(), num_ma = n_distinct(mom), num_pa = n_distinct(dad), num_par = num_ma + num_pa,
             full_sibship_sizes = print_sibs(mapa))
 
-# Now I am going to lazily just do that all over for the permed results
-ped_df <- lapply(paths, function(x) {
-  read_colony_best_config(path = file.path(x, "Permed-Run-1", "output.BestConfig")) %>%
-    filter(!is.na(mom) & !is.na(dad))
-}) %>%
-  bind_rows(.id = "Collection") %>%
-  mutate(mapa = paste(mom, dad, sep = "-"))
-
 
 # now, while we are at it, we may as well attach the different ESSs on there
 CR_ess <- tidy_res %>%
@@ -228,6 +220,27 @@ CR_ess <- tidy_res %>%
 coho_summ_table <- left_join(sibsizes_df, CR_ess)
 
 write_csv(coho_summ_table, path = "outputs/coho_summ_table-related.csv")
+
+# Now I am going to lazily just do that all over for the permed results
+ped_df <- lapply(paths, function(x) {
+  read_colony_best_config(path = file.path(x, "Permed-Run-1", "output.BestConfig")) %>%
+    filter(!is.na(mom) & !is.na(dad))
+}) %>%
+  bind_rows(.id = "Collection") %>%
+  mutate(mapa = paste(mom, dad, sep = "-"))
+sibsizes_df <- ped_df %>%
+  group_by(Collection) %>%
+  summarise(N = n(), num_ma = n_distinct(mom), num_pa = n_distinct(dad), num_par = num_ma + num_pa,
+            full_sibship_sizes = print_sibs(mapa))
+CR_ess <- tidy_res %>%
+  filter(run == "Permed-Run-1" & condition == "ifunrel") %>%
+  select(-run, -condition, -estimator) %>%
+  tidyr::spread(data = ., key = Estimator, value = ESS)
+
+coho_summ_table <- left_join(sibsizes_df, CR_ess)
+
+write_csv(coho_summ_table, path = "outputs/coho_summ_table-unrelated.csv")
+
 
 #### OTHER EXPLORATORY STUFF ####
 
