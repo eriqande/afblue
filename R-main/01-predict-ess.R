@@ -242,7 +242,26 @@ coho_summ_table <- left_join(sibsizes_df, CR_ess)
 write_csv(coho_summ_table, path = "outputs/coho_summ_table-unrelated.csv")
 
 
+#### COUNT UP NUMBER OF INFERRED SIBLING GROUPS OF DIFFERENT SIZE FROM THE PERMUTED DATA ####
+perm_df <- lapply(paths, function(x) {
+  read_colony_best_config(path = file.path(x, "Permed-Run-1", "output.BestConfig")) %>%
+    filter(!is.na(mom) & !is.na(dad))
+}) %>%
+  bind_rows(.id = "Collection") %>%
+  mutate(mapa = paste(mom, dad, sep = "-"))
+
+
+perm_df %>%
+  group_by(Collection, mapa) %>%
+  summarise(sibg_size = n()) %>%
+  group_by(sibg_size) %>%
+  tally()
+
+
 #### OTHER EXPLORATORY STUFF ####
+
+
+
 
 # a quick plot of it all
 ggplot(tidy_res, aes(x = as.numeric(factor(Collection)), y = ESS, colour = estimator)) +
