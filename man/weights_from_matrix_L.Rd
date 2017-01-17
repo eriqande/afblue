@@ -7,7 +7,7 @@
 weights_from_matrix_L(Lmat)
 }
 \arguments{
-\item{L}{a matrix, such as one that comes out of matrix_L_from_pedigree.  It should
+\item{Lmat}{a matrix, such as one that comes out of matrix_L_from_pedigree.  It should
 have row and column names and be invertible}
 }
 \description{

@@ -33,7 +33,7 @@ eff_size_from_weights <- function(w, M) {
   1 / (t(a) %*% M %*% a)
 }
 
-#### A FUNCTION YCLE OVER THOSE AND COMPUTE THE EFFECTIVE SAMPLE SIZES ####
+#### A FUNCTION TO CYCLE OVER THOSE AND COMPUTE THE EFFECTIVE SAMPLE SIZES ####
 compute_values <- function(paths, RUN = "Colony-Run-1") {
   tmp <- lapply(paths, function(x) {
 

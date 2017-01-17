@@ -15,6 +15,6 @@ Imports:
     magrittr,
     stringr,
     tidyr
-License: What license is it under?
+License: CC0
 LazyData: TRUE
 RoxygenNote: 5.0.1

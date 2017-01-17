@@ -2,14 +2,6 @@
 ### It calculates RRMSE for allele frequency, Fst, and Ne
 ### For calculation of effective sample size (ESS), see file "ESS.R"
 
-## Some or all of these might be needed
-##install.packages("devtools")
-##install.packages("dplyr")
-#install.packages("kinship2")
-#devtools::install_github("eriqande/afblue")
-
-library(dplyr)
-library(afblue)
 
 
 NLoci = 100
