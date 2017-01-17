@@ -2,6 +2,16 @@
 ### It calculates RRMSE for allele frequency, Fst, and Ne
 ### For calculation of effective sample size (ESS), see file "ESS.R"
 
+## Some or all of these might be needed
+##install.packages("devtools")
+##install.packages("dplyr")
+#install.packages("kinship2")
+#devtools::install_github("eriqande/afblue")
+
+library(dplyr)
+library(afblue)
+
+
 NLoci = 100
 Ne = 40
 S = 100
@@ -9,7 +19,7 @@ NGens = 10
 NReps = 10
 MaxFamily = 9
 ProbFamily = 0.5
-Familysize = seq(1:MaxFamily) 
+Familysize = seq(1:MaxFamily)
 Sibcheck = 1 ## 0 purges FS+HS; 1 purges only FS
 Mating = 2  ## 1 = random; 2 = monogamy; 3 = mixed
      if (Mating==3) {Familysize = seq(2:MaxFamily)+1}
@@ -89,8 +99,8 @@ Monogamy <- function(parents)           { ## This is separate sexes with monogam
   Half = N/2
   Males = seq(1:Half)
   Females = Males + Half
-  nextgen = matrix(0,N,NLoci) 
-  for (i in 1:N)  {     
+  nextgen = matrix(0,N,NLoci)
+  for (i in 1:N)  {
      A = sample(Males,1) # pick a male parent
      B = A+Half # pick the female parent paired with that male
      for (j in 1:NLoci)  {  ## get offspring genotypes for each locus
@@ -99,9 +109,9 @@ Monogamy <- function(parents)           { ## This is separate sexes with monogam
            nextgen[i,j] = nextgen[i,j] + 0.5*parents[A,j]  }  # end first parent
          if (parents[B,j]==1) { ## heterozygote, so pick an allele
            nextgen[i,j] = nextgen[i,j] + rbinom(1,1,0.5)  } else {  ## homozygote, so take half of the genes
-           nextgen[i,j] = nextgen[i,j] + 0.5*parents[B,j]  }  # end first parent   
+           nextgen[i,j] = nextgen[i,j] + 0.5*parents[B,j]  }  # end first parent
            }  ## end for j
-           }  ## end for i  
+           }  ## end for i
   return(nextgen)               } # end function
 
 Separate <- function(parents)           { ## This is separate sexes with random mating
@@ -110,8 +120,8 @@ Separate <- function(parents)           { ## This is separate sexes with random 
   Half = N/2
   Males = seq(1:Half)
   Females = Males + Half
-  nextgen = matrix(0,N,NLoci) 
-  for (i in 1:N)  {     
+  nextgen = matrix(0,N,NLoci)
+  for (i in 1:N)  {
      A = sample(Males,1) # pick a male parent
      B = sample(Females,1) # pick a female parent
      for (j in 1:NLoci)  {  ## get offspring genotypes for each locus
@@ -120,25 +130,25 @@ Separate <- function(parents)           { ## This is separate sexes with random 
            nextgen[i,j] = nextgen[i,j] + 0.5*parents[A,j]  }  # end first parent
          if (parents[B,j]==1) { ## heterozygote, so pick an allele
            nextgen[i,j] = nextgen[i,j] + rbinom(1,1,0.5)  } else {  ## homozygote, so take half of the genes
-           nextgen[i,j] = nextgen[i,j] + 0.5*parents[B,j]  }  # end first parent   
+           nextgen[i,j] = nextgen[i,j] + 0.5*parents[B,j]  }  # end first parent
            }  ## end for j
-           }  ## end for i  
+           }  ## end for i
   return(nextgen)               } # end function
-  
-Mixed <- function(parents)           { ## This is separate sexes with mixed mating 
+
+Mixed <- function(parents)           { ## This is separate sexes with mixed mating
     # N = number of inds (rows)
     N = dim(parents)[[1]]
     Half = N/2
     Males = seq(1:Half)
     Females = Males + Half
     Offspring = matrix(0,2*N,NLoci)
-    
+
     OffNumber = 0
     while (OffNumber < N) {     ## produce at least N offspring
        A = sample(Males,1) # pick a male parent
        B = sample(Females,1) # pick a female parent
        C = rbinom(1,1,ProbFamily)
-       if (C == 0) { Noff = 1  }  else {Noff = sample(Familysize,1)} 
+       if (C == 0) { Noff = 1  }  else {Noff = sample(Familysize,1)}
          for (i in 1:Noff)  {
          OffNumber = OffNumber + 1
        for (j in 1:NLoci)  {  ## get offspring genotypes for each locus
@@ -147,12 +157,12 @@ Mixed <- function(parents)           { ## This is separate sexes with mixed mati
              Offspring[OffNumber,j] = Offspring[OffNumber,j] + 0.5*parents[A,j]  }  # end first parent
            if (parents[B,j]==1) { ## heterozygote, so pick an allele
              Offspring[OffNumber,j] = Offspring[OffNumber,j] + rbinom(1,1,0.5)  } else {  ## homozygote, so take half of the genes
-             Offspring[OffNumber,j] = Offspring[OffNumber,j] + 0.5*parents[B,j]  }  # end first parent   
+             Offspring[OffNumber,j] = Offspring[OffNumber,j] + 0.5*parents[B,j]  }  # end first parent
              }  ## end for j
-             }  ## end for i 
+             }  ## end for i
              } ## end while
       nextgen = Offspring[1:N,]  ## truncate offspring to desired N
- return(nextgen)            } # end function  
+ return(nextgen)            } # end function
 
 
 ##############################
@@ -166,7 +176,7 @@ Mixed <- function(parents)           { ## This is separate sexes with mixed mati
     Females = Males + Half
     S1 = matrix(0,2*S,2)
     Offspring = matrix(0,2*S,NLoci)
-    
+
     OffNumber = 0
     while (OffNumber < S) {     ## produce at least S offspring
        A = sample(Males,1) # pick a male parent
@@ -182,14 +192,14 @@ Mixed <- function(parents)           { ## This is separate sexes with mixed mati
              Offspring[OffNumber,j] = Offspring[OffNumber,j] + 0.5*parents[A,j]  }  # end first parent
            if (parents[B,j]==1) { ## heterozygote, so pick an allele
              Offspring[OffNumber,j] = Offspring[OffNumber,j] + rbinom(1,1,0.5)  } else {  ## homozygote, so take half of the genes
-             Offspring[OffNumber,j] = Offspring[OffNumber,j] + 0.5*parents[B,j]  }  # end first parent   
+             Offspring[OffNumber,j] = Offspring[OffNumber,j] + 0.5*parents[B,j]  }  # end first parent
              }  ## end for j
-             }  ## end for i 
+             }  ## end for i
              } ## end while
     OffspringData = cbind(S1,Offspring)
     OffspringData = OffspringData[1:S,]  ## truncate offspring to desired sample size
-    
-  return(OffspringData)            } # end function 
+
+  return(OffspringData)            } # end function
 
    RanFamily <- function(parents)           {  ## simulates family-correlated sampling with random mating
       # N = number of inds (rows)
@@ -199,7 +209,7 @@ Mixed <- function(parents)           { ## This is separate sexes with mixed mati
       Females = Males + Half
       S1 = matrix(0,2*S,2)
       Offspring = matrix(0,2*S,NLoci)
-      
+
       OffNumber = 0
       while (OffNumber < S) {     ## produce at least S offspring
          B = sample(Females,1) # pick a female parent
@@ -215,15 +225,15 @@ Mixed <- function(parents)           { ## This is separate sexes with mixed mati
                Offspring[OffNumber,j] = Offspring[OffNumber,j] + 0.5*parents[A,j]  }  # end first parent
              if (parents[B,j]==1) { ## heterozygote, so pick an allele
                Offspring[OffNumber,j] = Offspring[OffNumber,j] + rbinom(1,1,0.5)  } else {  ## homozygote, so take half of the genes
-               Offspring[OffNumber,j] = Offspring[OffNumber,j] + 0.5*parents[B,j]  }  # end first parent   
+               Offspring[OffNumber,j] = Offspring[OffNumber,j] + 0.5*parents[B,j]  }  # end first parent
                }  ## end for j
-               }  ## end for i 
+               }  ## end for i
                } ## end while
       OffspringData = cbind(S1,Offspring)
       OffspringData = OffspringData[1:S,]  ## truncate offspring to desired sample size
-      
+
   return(OffspringData)            } # end function
-  
+
    MixedFamily <- function(parents)           {  ## simulates same mixed mating model but allows samples larger than NS >= N
           # N = number of inds (rows)
           N = dim(parents)[[1]]
@@ -232,13 +242,13 @@ Mixed <- function(parents)           { ## This is separate sexes with mixed mati
           Females = Males + Half
           S1 = matrix(0,2*S,2)
           Offspring = matrix(0,2*S,NLoci)
-          
+
           OffNumber = 0
           while (OffNumber < S) {     ## produce at least S offspring
              A = sample(Males,1) # pick a male parent
              B = sample(Females,1) # pick a female parent
              C = rbinom(1,1,ProbFamily)
-             if (C == 0) { Noff = 1  }  else {Noff = sample(Familysize,1)} 
+             if (C == 0) { Noff = 1  }  else {Noff = sample(Familysize,1)}
                for (i in 1:Noff)  {
                OffNumber = OffNumber + 1
                S1[OffNumber,1] = A        ## record parents of each progeny
@@ -249,28 +259,28 @@ Mixed <- function(parents)           { ## This is separate sexes with mixed mati
                    Offspring[OffNumber,j] = Offspring[OffNumber,j] + 0.5*parents[A,j]  }  # end first parent
                  if (parents[B,j]==1) { ## heterozygote, so pick an allele
                    Offspring[OffNumber,j] = Offspring[OffNumber,j] + rbinom(1,1,0.5)  } else {  ## homozygote, so take half of the genes
-                   Offspring[OffNumber,j] = Offspring[OffNumber,j] + 0.5*parents[B,j]  }  # end first parent   
+                   Offspring[OffNumber,j] = Offspring[OffNumber,j] + 0.5*parents[B,j]  }  # end first parent
                    }  ## end for j
-                   }  ## end for i 
+                   }  ## end for i
                    } ## end while
       OffspringData = cbind(S1,Offspring)
       OffspringData = OffspringData[1:S,]  ## truncate offspring to desired sample size
-      
+
     return(OffspringData)            } # end function
 
 
 #################################################################
 
 ###############################################################
-GetLD <- function(Geno)     { 
+GetLD <- function(Geno)     {
  UsedLoci = G
  rsq = matrix(NA,UsedLoci,UsedLoci)
- for (i in 1:(UsedLoci-1))     {  
+ for (i in 1:(UsedLoci-1))     {
  for (j in (i+1):UsedLoci)  {
-      if(var(Geno[,i])*var(Geno[,j])>0) {rsq[i,j] = cor(Geno[,i],Geno[,j])}   } } # end for i and j                        
- rsq = rsq^2		        
- rmean = mean(rsq,na.rm=TRUE)                                         
-return(rmean)      } # end function  
+      if(var(Geno[,i])*var(Geno[,j])>0) {rsq[i,j] = cor(Geno[,i],Geno[,j])}   } } # end for i and j
+ rsq = rsq^2
+ rmean = mean(rsq,na.rm=TRUE)
+return(rmean)      } # end function
 ######################################################################
 
 ###############################################################
@@ -281,9 +291,9 @@ SumP1 = 1 - (P2^2 + (1-P2)^2)
 SumP2 = 1 - (OldP^2 + (1-OldP)^2)
 Hexp = (SumP1+SumP2)/2
 Pbar = (P2 + OldP)/2
-Htot = 1 - Pbar^2 - (1-Pbar)^2 
+Htot = 1 - Pbar^2 - (1-Pbar)^2
 F = 1 - Hexp/Htot
-Fst = mean(F,na.rm=TRUE)                        
+Fst = mean(F,na.rm=TRUE)
 return(Fst)  } # end function
 ###############################################################
 
@@ -297,11 +307,11 @@ for (j in 1:NLoci)     {
    y = sample.int(x+1,1, replace = TRUE) - 1
    if (y > 0)         {
    Parents0[1:y,j] = 0   } # end if
-                       } # end j       
+                       } # end j
 
-##scramble the rows (individuals) to randomize initial allele freqs for samples 
+##scramble the rows (individuals) to randomize initial allele freqs for samples
 Parents0 = Parents0[sample(nrow(Parents0), nrow(Parents0)),]
-                                        
+
 ## We are simulating a Wright-Fisher ideal population with separate sexes
 
 Parents1 = Parents0
@@ -312,9 +322,9 @@ for (k in 1:NGens)    {
   if (Mating == 1) {Parents2 = Separate(Parents1) } else if (Mating == 2) {
      Parents2 = Monogamy(Parents1) } else {
      Parents2 = Mixed(Parents1) }
-Parents2 = Parents2[sample(nrow(Parents2), nrow(Parents2)),]  ##scramble the rows (individuals) 
+Parents2 = Parents2[sample(nrow(Parents2), nrow(Parents2)),]  ##scramble the rows (individuals)
 ## offpsring become parents of next generation
-Parents1 = Parents2 
+Parents1 = Parents2
                       } # end for k
 
 TrueP = colMeans(Parents1)/2  ## get allele frequencies in parents of sample
@@ -323,7 +333,7 @@ PP = TrueP*(1-TrueP)
 for (jj in 1:NReps) {
 
 ###########################
-## Produce a sample from the final generation 
+## Produce a sample from the final generation
  if (Mating == 1) {Offspring = RanFamily(Parents1)  } else if (Mating == 2) {
      Offspring = MonoFamily(Parents1) } else {
      Offspring = MixedFamily(Parents1) }
@@ -342,9 +352,9 @@ G = dim(zz)[[2]]
 MeanRsq = GetLD(zz)
 Rprime = MeanRsq - 1/(S-1)
 if (S > 29) {NeR[jj] = (2/3 + sqrt(4/9-7.2*Rprime))/(2*Rprime)} else {NeR[jj] = (0.618 + sqrt(0.618^2-5.24*Rprime))/(2*Rprime)}
- 
+
 if (is.odd(jj)==TRUE) { ## then jj is odd, so skip Fst and record data for pop 1
-    OldP = TrueP 
+    OldP = TrueP
     OldSampP = SampP  } else {  ## else = even, so compute Fst
   combo1 = rbind(TrueP, OldP)
   combo2 = rbind(SampP, OldSampP)
@@ -358,7 +368,7 @@ FSTP[jj/2] = GetFst(FP1)  ##True Fst in the parents
 FSTO[jj/2] = GetFst(FP2) - 1/(2*S)  ##Fst in the sample
 FPP[jj/2] = (FSTP[jj/2]-FSTO[jj/2])^2
 } #end else
- 
+
 MaleSuccess = table(Parentlist[,1])
 A = sum(MaleSuccess)
 B = sum(MaleSuccess^2)
@@ -372,8 +382,8 @@ PWOP[jj] = 4*MalePWOP*FemalePWOP/(MalePWOP + FemalePWOP) ## effective number of 
 Sibs = matrix(0,S,S)
 for (i in 1:(S-1))  {   ## Get matrix of sibships
 for (j in (i+1):S)  {
-   if (Parentlist[i,1]==Parentlist[j,1] | Parentlist[i,1]==Parentlist[j,2]) { Sibs[i,j] = Sibs[i,j]+1 } 
-   if (Parentlist[i,2]==Parentlist[j,1] | Parentlist[i,2]==Parentlist[j,2]) { Sibs[i,j] = Sibs[i,j]+1 } 
+   if (Parentlist[i,1]==Parentlist[j,1] | Parentlist[i,1]==Parentlist[j,2]) { Sibs[i,j] = Sibs[i,j]+1 }
+   if (Parentlist[i,2]==Parentlist[j,1] | Parentlist[i,2]==Parentlist[j,2]) { Sibs[i,j] = Sibs[i,j]+1 }
    }  }  ## end for i and j
 
 H = sum(Sibs == 1)
@@ -385,7 +395,7 @@ MaxSib[jj] = max(max(MaleSuccess),max(FemaleSuccess))
 
 ###############################################
 ##Implement Yank2 removal; remove individuals only if 2 full sibs are already in the sample
-   
+
 ReducedOffspring = Offspring[1,]
 ilist = c(1)
 
@@ -397,9 +407,9 @@ for (j in 1:length(ilist)) {
   }  # end for j
   if (sibyes < 2) {
     ilist = append(ilist,i)
-    ReducedOffspring = rbind(ReducedOffspring,Offspring[i,])  } 
-  } # end for i 
-  
+    ReducedOffspring = rbind(ReducedOffspring,Offspring[i,])  }
+  } # end for i
+
 ReducedParentlistYank = ReducedOffspring[,1:2]
 ReducedGenos = ReducedOffspring[,3:(NLoci+2)]
 ReducedSampPYank = colMeans(ReducedGenos)/2  ## allele frequencies in sample of progeny that excludes siblings
@@ -454,8 +464,8 @@ for (j in 1:length(ilist)) {
   D = rbinom(1,1,Beta)
   if (D == 0) {ReducedOffspring = rbind(ReducedOffspring,Offspring[i,])  }  ## keep the sib with prob 1-Beta
   }  ## end else
-  } # end for i 
-  
+  } # end for i
+
 ReducedParentlist = ReducedOffspring[,1:2]
 ReducedGenos = ReducedOffspring[,3:(NLoci+2)]
 ReducedSampP = colMeans(ReducedGenos)/2  ## allele frequencies in sample of progeny that excludes siblings
@@ -508,7 +518,7 @@ for (j in 1:length(ilist)) {
   D = rbinom(1,1,Beta)
   if (D == 0) {ReducedOffspring = rbind(ReducedOffspring,Offspring[i,])  }  ## keep the sib with prob 1-Beta
   }  ## end else
-  } # end for i 
+  } # end for i
 
 ReducedParentlist = ReducedOffspring[,1:2]
 ReducedGenos = ReducedOffspring[,3:(NLoci+2)]
@@ -562,7 +572,7 @@ for (j in 1:length(ilist)) {
   D = rbinom(1,1,Beta)
   if (D == 0) {ReducedOffspring = rbind(ReducedOffspring,Offspring[i,])  }  ## keep the sib with prob 1-Beta
   }  ## end else
-  } # end for i 
+  } # end for i
 
 ReducedParentlist = ReducedOffspring[,1:2]
 ReducedGenos = ReducedOffspring[,3:(NLoci+2)]
@@ -616,7 +626,7 @@ for (j in 1:length(ilist)) {
   D = rbinom(1,1,Beta)
   if (D == 0) {ReducedOffspring = rbind(ReducedOffspring,Offspring[i,])  }  ## keep the sib with prob 1-Beta
   }  ## end else
-  } # end for i 
+  } # end for i
 
 ReducedParentlist = ReducedOffspring[,1:2]
 ReducedGenos = ReducedOffspring[,3:(NLoci+2)]
@@ -671,7 +681,7 @@ for (j in 1:length(ilist)) {
   D = rbinom(1,1,Beta)
   if (D == 0) {ReducedOffspring = rbind(ReducedOffspring,Offspring[i,])  }  ## keep the sib with prob 1-Beta
   }  ## end else
-  } # end for i 
+  } # end for i
 
 ReducedParentlist = ReducedOffspring[,1:2]
 ReducedGenos = ReducedOffspring[,3:(NLoci+2)]
@@ -725,7 +735,7 @@ for (j in 1:length(ilist)) {
   D = rbinom(1,1,Beta)
   if (D == 0) {ReducedOffspring = rbind(ReducedOffspring,Offspring[i,])  }  ## keep the sib with prob 1-Beta
   }  ## end else
-  } # end for i 
+  } # end for i
 
 ReducedParentlist = ReducedOffspring[,1:2]
 ReducedGenos = ReducedOffspring[,3:(NLoci+2)]
@@ -768,7 +778,7 @@ FPP6[jj/2] = (FSTP[jj/2]-FSTO6[jj/2])^2
 ###############################################
 
 print(paste0("Replicate = ",jj))
-flush.console()           
+flush.console()
 
 }  ## end for jj
 
@@ -831,7 +841,7 @@ AllS = c(HMS, HMSYank, HMS1, HMS2, HMS3, HMS4, HMS5, HMS6)
 AllNe2 = c(RMSENe/RMSENe, RMSENeYank/RMSENe, RMSENe1/RMSENe, RMSENe2/RMSENe, RMSENe3/RMSENe, RMSENe4/RMSENe, RMSENe5/RMSENe, RMSENe6/RMSENe)
 AllNe = c(HMNeR, HMNeRYank, HMReducedNeR1,HMReducedNeR2,HMReducedNeR3,HMReducedNeR4,HMReducedNeR5,HMReducedNeR6)
 AllPP = c(1, mean(ReducedPPYank)/mean(SamplePP), mean(ReducedPP1)/mean(SamplePP), mean(ReducedPP2)/mean(SamplePP),mean(ReducedPP3)/mean(SamplePP),mean(ReducedPP4)/mean(SamplePP),mean(ReducedPP5)/mean(SamplePP),mean(ReducedPP6)/mean(SamplePP))
-AllFPP = c(1,sqrt(mean(FPPYank))/sqrt(mean(FPP)),sqrt(mean(FPP1))/sqrt(mean(FPP)),sqrt(mean(FPP2))/sqrt(mean(FPP)),sqrt(mean(FPP3))/sqrt(mean(FPP)),sqrt(mean(FPP4))/sqrt(mean(FPP)),sqrt(mean(FPP5))/sqrt(mean(FPP)),sqrt(mean(FPP6))/sqrt(mean(FPP))) 
+AllFPP = c(1,sqrt(mean(FPPYank))/sqrt(mean(FPP)),sqrt(mean(FPP1))/sqrt(mean(FPP)),sqrt(mean(FPP2))/sqrt(mean(FPP)),sqrt(mean(FPP3))/sqrt(mean(FPP)),sqrt(mean(FPP4))/sqrt(mean(FPP)),sqrt(mean(FPP5))/sqrt(mean(FPP)),sqrt(mean(FPP6))/sqrt(mean(FPP)))
 NeRatio = AllNe/TrueNe
 All = cbind(AllS,AllPP,AllFPP,AllPWOP,AllNe,NeRatio,AllNe2)
 rownames(All) = c("Full","Yank2","25","50","75","90","95","100")
