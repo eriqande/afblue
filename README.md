@@ -42,7 +42,24 @@ Then open up the Rstudio project (`afblue.Rproj`) in that repository.
 
 ### Main paper simulations
 
-In order to rerun the simulations done in the paper you must run the code in the files `R-Robin/ESS.R` and `R-Robin/Sims.R`.
+In order to rerun the simulations done in the paper you must run the code in the files `R-Robin/ESS.R` and `R-Robin/Sims.R`. The top part of these files, e.g., the lines:
+
+``` r
+NLoci = 100
+Ne = 100
+S = 40
+NGens = 10
+NReps = 200
+MaxSib = seq(1:NReps)
+MaxFamily = 9
+Familysize = seq(1:MaxFamily)
+ProbFamily = 0.5 ## Only used with Mixed mating model
+Sibcheck = 0 ## 0 removes FS+HS; 1 removes FS only
+Mating = 1  ## 1 = random; 2 = monogamy; 3 = mixed
+     if (Mating==3) {Familysize = seq(2:MaxFamily)+1}
+```
+
+provide a place for the user to change the simulation parameters as needed or desired.
 
 ### Coho salmon population investigations
 
